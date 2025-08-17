@@ -41,8 +41,7 @@ jobs:
       - name: Use Kaggle Badges Action
         uses: spider-man-tm/kaggle-badges@v1.3.0
         with:
-          user_name: ${{ secrets.KAGGLE_USERNAME }}
-          user_key: ${{ secrets.KAGGLE_KEY }}
+          user_name: kizukusunami
 
       # 生成されたバッジのコミット＆Push（存在する場合のみ）
       - name: Commit and Push SVG files
