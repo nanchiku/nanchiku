@@ -11,22 +11,40 @@ jobs:
   create-badges:
     runs-on: ubuntu-latest
     steps:
+      # リポジトリのチェックアウト
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # Node.js 環境のセットアップ
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+
+      # Puppeteer 用のブラウザインストール
       - name: Install Puppeteer browser
         run: npx puppeteer browsers install chrome@131.0.6778.85
+
+      # 出力先ディレクトリを事前に作成
+      - name: Ensure output directories exist
+        run: mkdir -p ./kaggle-badges ./kaggle-plates
+
+      # Kaggle バッジの生成
       - name: Use Kaggle Badges Action
         uses: spider-man-tm/kaggle-badges@v1.3.0
         with:
-          user_name: "kizukusunami"
+          user_name: ${{ secrets.KAGGLE_USERNAME }}
+          user_key: ${{ secrets.KAGGLE_KEY }}
+
+      # 生成されたバッジのコミット＆Push
       - name: Commit and Push SVG files
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add ./kaggle-badges/* ./kaggle-plates/*
-          git commit -m "Add generated SVG files" || echo "No changes to commit"
-          git push
+          if ls ./kaggle-badges/*.svg 1> /dev/null 2>&1 || ls ./kaggle-plates/*.svg 1> /dev/null 2>&1; then
+            git add ./kaggle-badges/* ./kaggle-plates/*
+            git commit -m "Add generated SVG files"
+            git push
+          else
+            echo "No new SVG files to commit."
+          fi
