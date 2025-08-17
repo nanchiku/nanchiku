@@ -32,7 +32,7 @@ jobs:
       - name: Generate Kaggle badges
         uses: spider-man-tm/kaggle-badges@v1.3.0
         with:
-          user_name: ${{ secrets.KAGGLE_USERNAME }}
+          user_name: kizukusunami
 
       # Learner バッジを生成（擬似SVG生成例）
       - name: Generate Learner badge
