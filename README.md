@@ -8,7 +8,10 @@
 ## 🏅 Kaggle Badges
 
 <!--BADGES-->
-<!-- GitHub Actions により自動生成されるバッジがここに挿入されます -->
+<p align="center">
+  <img src="./kaggle-badges/Learner/plastic-black.svg" alt="Learner"/>
+</p>
+<!--BADGES-->
 
 ---
 
