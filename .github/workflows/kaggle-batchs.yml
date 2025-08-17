@@ -11,47 +11,57 @@ jobs:
   create-badges:
     runs-on: ubuntu-latest
     steps:
-      # リポジトリのチェックアウト
+      # リポジトリチェックアウト
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Node.js 環境のセットアップ
+      # Node.js 設定
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      # 依存パッケージのインストール
-      - name: Install dependencies
-        run: npm ci
+      # Puppeteer 用 Chrome インストール
+      - name: Install Puppeteer browser
+        run: |
+          npm install puppeteer
+          chmod +x ./node_modules/.bin/puppeteer
+          npx puppeteer browsers install chrome@131.0.6778.85
 
-      # Puppeteer に実行権限を付与
-      - name: Ensure Puppeteer is executable
-        run: chmod +x ./node_modules/.bin/puppeteer
-
-      # Puppeteer 用の Chrome をインストール
-      - name: Install Chrome for Puppeteer
-        run: npx puppeteer browsers install chrome@131.0.6778.85
-
-      # 出力先ディレクトリを事前に作成
-      - name: Ensure output directories exist
-        run: mkdir -p ./kaggle-badges ./kaggle-plates
-
-      # Kaggle バッジの生成
-      - name: Use Kaggle Badges Action
+      # Kaggle Badges Action 実行（Competitions/Datasets/Notebooks/Discussions）
+      - name: Generate Kaggle badges
         uses: spider-man-tm/kaggle-badges@v1.3.0
         with:
-          user_name: kizukusunami
+          user_name: ${{ secrets.KAGGLE_USERNAME }}
 
-      # 生成されたバッジのコミット＆Push（存在する場合のみ）
-      - name: Commit and Push SVG files
+      # Learner バッジを生成（擬似SVG生成例）
+      - name: Generate Learner badge
+        run: |
+          mkdir -p ./kaggle-badges/Learner
+          echo '<svg xmlns="http://www.w3.org/2000/svg" width="150" height="50"><text x="0" y="15">Learner</text></svg>' > ./kaggle-badges/Learner/plastic-black.svg
+
+      # README に存在するバッジのみ反映
+      - name: Update README with badges
+        run: |
+          echo '<p align="center">' > README_badges.html
+          for dir in ./kaggle-badges/*; do
+            badge=$(ls $dir/*.svg 2>/dev/null)
+            if [ -n "$badge" ]; then
+              # 相対パスに変換してHTML追加
+              echo "<img src=\"${badge#./}\" alt=\"$(basename $dir)\"/>" >> README_badges.html
+            fi
+          done
+          echo '</p>' >> README_badges.html
+
+          # README内 <!--BADGES--> タグの下に差し替え
+          awk '/<!--BADGES-->/ {print; system("cat README_badges.html"); next}1' README.md > README.tmp
+          mv README.tmp README.md
+
+      # Git 設定・Push
+      - name: Commit and Push SVG files & README
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          if ls ./kaggle-badges/*.svg 1> /dev/null 2>&1 || ls ./kaggle-plates/*.svg 1> /dev/null 2>&1; then
-            git add ./kaggle-badges/* ./kaggle-plates/*
-            git commit -m "Add generated SVG files"
-            git push
-          else
-            echo "No new SVG files to commit."
-          fi
+          git add ./kaggle-badges ./README.md
+          git commit -m "Add generated Kaggle badges" || echo "No changes to commit"
+          git push

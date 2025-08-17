@@ -7,13 +7,8 @@
 
 ## 🏅 Kaggle Badges
 
-<!-- Kaggle Badges: GitHub Actions により自動生成されます -->
-<p align="center">
-  <img src="./kaggle-badges/CompetitionsRank/plastic-black.svg" alt="Competitions Rank"/>
-  <img src="./kaggle-badges/DatasetsRank/plastic-black.svg" alt="Datasets Rank"/>
-  <img src="./kaggle-badges/NotebooksRank/plastic-black.svg" alt="Notebooks Rank"/>
-  <img src="./kaggle-badges/DiscussionsRank/plastic-black.svg" alt="Discussions Rank"/>
-</p>
+<!--BADGES-->
+<!-- GitHub Actions により自動生成されるバッジがここに挿入されます -->
 
 ---
 
