@@ -58,15 +58,15 @@ jobs:
           mv README.tmp README.md
 
       # Git 設定・Push
-      - name: Configure Git to use GITHUB_TOKEN
+      - name: Commit and Push SVG files
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-
-      - name: Commit and Push SVG files & README
-        run: |
-          git add ./kaggle-badges ./README.md
-          git commit -m "Add generated Kaggle badges" || echo "No changes to commit"
-          git push origin HEAD:main
+          if ls ./kaggle-badges/*.svg 1> /dev/null 2>&1 || ls ./kaggle-plates/*.svg 1> /dev/null 2>&1; then
+            git add ./kaggle-badges/* ./kaggle-plates/*
+            git commit -m "Add generated SVG files"
+            git push
+          else
+            echo "No new SVG files to commit."
+          fi
 
