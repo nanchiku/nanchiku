@@ -21,8 +21,16 @@ jobs:
         with:
           node-version: "20"
 
-      # Puppeteer 用のブラウザインストール
-      - name: Install Puppeteer browser
+      # 依存パッケージのインストール
+      - name: Install dependencies
+        run: npm ci
+
+      # Puppeteer に実行権限を付与
+      - name: Ensure Puppeteer is executable
+        run: chmod +x ./node_modules/.bin/puppeteer
+
+      # Puppeteer 用の Chrome をインストール
+      - name: Install Chrome for Puppeteer
         run: npx puppeteer browsers install chrome@131.0.6778.85
 
       # 出力先ディレクトリを事前に作成
@@ -36,7 +44,7 @@ jobs:
           user_name: ${{ secrets.KAGGLE_USERNAME }}
           user_key: ${{ secrets.KAGGLE_KEY }}
 
-      # 生成されたバッジのコミット＆Push
+      # 生成されたバッジのコミット＆Push（存在する場合のみ）
       - name: Commit and Push SVG files
         run: |
           git config --local user.email "action@github.com"
